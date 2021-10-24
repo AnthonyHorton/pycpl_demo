@@ -1,0 +1,9 @@
+
+Start time     : 2021-10-13T18:22:14
+Program name   : esorex
+Severity level : [ INFO  ] 
+
+18:22:14 [ INFO  ] : [tid=000] This is EsoRex, version 3.13.3
+18:22:14 [ INFO  ] : [tid=000] using the libraries: CPL = 7.0.90, CFITSIO = 3.45, WCSLIB = 7.4, FFTW (normal precision) = 3.3.4, FFTW (single precision) = 3.3.8-sse2, CPL FLOP counting is unavailable, enable with -DCPL_ADD_FLOPS, OPENMP = 201511
+18:22:14 [ INFO  ] : [tid=000] Invocation command line was: esorex --create-config=test3.rc gimasterbias
+18:22:14 [ INFO  ] : [tid=000] Creating configuration file 'test3.rc'
