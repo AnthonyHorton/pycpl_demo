@@ -51,8 +51,8 @@ class HelloUser(PyRecipe):
     # dictionary of recipe parameter name:value pairs, and returns a FrameSet of output files.
     def run(self, frameset, settings):
         print(f"Hello, {self.parameters['hellouser.username'].value}, " +
-              f"{self.parameters['hellouser.reaction'].value} to see you.")
-        print(f"The first {self.parameters['hellouser.nfits'].value} FITS files are:")
+              f"{self.parameters['hellouser.reaction'].value} to see you.\n")
+        print(f"The first {self.parameters['hellouser.nfits'].value} FITS files are:\n")
         for i, frame in enumerate(frameset):
             if i >= self.parameters['hellouser.nfits'].value:
                 break

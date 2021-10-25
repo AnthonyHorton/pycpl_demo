@@ -1,4 +1,6 @@
 products
+example
 .ipynb_checkpoints
 *.log
 *.bak
+__pycache__
