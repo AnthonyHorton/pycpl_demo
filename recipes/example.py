@@ -63,6 +63,14 @@ class Example(ui.PyRecipe):
             output_file = os.path.join("./products/", os.path.basename(frame.file))
             raw_image.save(output_file, header, core.io.CREATE)
             Msg.info(self.name, f"Saved processed file as {output_file!r}.")
-            processed_frames.append(ui.Frame(file=output_file))
+            processed_frames.append(ui.Frame(file=output_file,
+                                             tag="OBJECT",
+                                             group=ui.Frame.FrameGroup.PRODUCT,
+                                             level=ui.Frame.FrameLevel.INTERMEDIATE,
+                                             type=ui.Frame.FrameType.IMAGE))
+            processed_frames.sign_products()
+            Msg.info(self.name, "Signed data products.")
+            processed_frames.update_product_header()
+            Msg.info(self.name, "FITS headers updated.")
 
         return processed_frames
