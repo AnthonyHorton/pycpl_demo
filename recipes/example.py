@@ -21,9 +21,9 @@ class Example(ui.PyRecipe):
     def run(self, frameset, settings):
         # Update parameters from settings dict
         for key, value in settings.items():
-            if key in self.parameters:
+            try:
                 self.parameters[key].value = value
-            else:
+            except KeyError:
                 Msg.warning(self.name, f"Settings includes {key}:{value} but {self} has no parameter named {key}.")
   
         raw_frames = ui.FrameSet()
@@ -36,40 +36,53 @@ class Example(ui.PyRecipe):
             if frame.tag == "OBJECT":
                 raw_frames.append(frame)
                 Msg.debug(self.name, f"Got raw frame: {frame.file}.")
+
             elif frame.tag == "DARK":
                 dark_image = core.Image.load(frame.file)
                 Msg.info(self.name, f"Loaded dark frame {frame.file!r}.")
+
             elif frame.tag == "FLAT":
                 flat_image = core.Image.load(frame.file)
                 Msg.info(self.name, f"Loaded flat frame {frame.file!r}.")
+
             else:
                 Msg.warning(self.name, f"Got frame {frame.file!r} with unexpected tag {frame.tag!r}, ignoring.")
 
         if not dark_image:
-            raise DataNotFoundError("No dark frame in frameset.")
+            raise core.DataNotFoundError("No dark frame in frameset.")
             
         if not flat_image:
-            raise DataNotFoundError("No flat frame in frameset.")
+            raise core.DataNotFoundError("No flat frame in frameset.")
+        
+        if len(raw_frames)==0:
+            raise core.DataNotFoundError("No raw frames in frameset.")
         
         for frame in raw_frames:
             Msg.info(self.name, f"Processing {frame.file!r}...")
+
             Msg.debug(self.name, "Loading image.")
             raw_image = core.Image.load(frame.file)
             header = core.PropertyList.load(frame.file, 0)
+
             Msg.debug(self.name, "Dark subtracting...")
             raw_image.subtract(dark_image)
+
             Msg.debug(self.name, "Flat fielding...")
             raw_image.divide(flat_image)
+
             output_file = os.path.join("./products/", os.path.basename(frame.file))
             raw_image.save(output_file, header, core.io.CREATE)
             Msg.info(self.name, f"Saved processed file as {output_file!r}.")
+
             processed_frames.append(ui.Frame(file=output_file,
                                              tag="OBJECT",
                                              group=ui.Frame.FrameGroup.PRODUCT,
                                              level=ui.Frame.FrameLevel.INTERMEDIATE,
-                                             type=ui.Frame.FrameType.IMAGE))
+                                             ftype=ui.Frame.FrameType.IMAGE))
+
             processed_frames.sign_products()
             Msg.info(self.name, "Signed data products.")
+
             processed_frames.update_product_header()
             Msg.info(self.name, "FITS headers updated.")
 

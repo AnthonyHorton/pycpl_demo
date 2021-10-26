@@ -1,5 +1,6 @@
 import os
 
+from cpl import core
 from cpl.ui import PyRecipe, ParameterList, ParameterValue, ParameterRange, ParameterEnum
 
 
@@ -50,9 +51,18 @@ class HelloUser(PyRecipe):
     # Only required method is run(), which takes a cpl.ui.FrameSet of input files and a Python
     # dictionary of recipe parameter name:value pairs, and returns a FrameSet of output files.
     def run(self, frameset, settings):
+        # Update parameters from settings dict
+        for key, value in settings.items():
+            try:
+                self.parameters[key].value = value
+            except KeyError:
+                core.Msg.warning(self.name, f"Settings includes {key}:{value} but {self} has no parameter named {key}.")
+        
         print(f"Hello, {self.parameters['hellouser.username'].value}, " +
               f"{self.parameters['hellouser.reaction'].value} to see you.\n")
+
         print(f"The first {self.parameters['hellouser.nfits'].value} FITS files are:\n")
+
         for i, frame in enumerate(frameset):
             if i >= self.parameters['hellouser.nfits'].value:
                 break
